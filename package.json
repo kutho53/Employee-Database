@@ -3,7 +3,6 @@
   "description": "run \"npm i inquirer@8.2.4\"\r run \"npm i pg\"",
   "version": "1.0.0",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,6 +13,7 @@
   "author": "Kurt Thomas",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "inquirer": "^8.2.4",
     "pg": "^8.13.1"
   },

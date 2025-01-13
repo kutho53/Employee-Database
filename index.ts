@@ -1,3 +1,5 @@
+require('dotenv').config();
+const db = require('pg');
 const inquirer = require('inquirer');
   
 // write function for viewDepartments()

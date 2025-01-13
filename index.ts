@@ -1,8 +1,10 @@
 require('dotenv').config();
-const db = require('pg');
+//import dotenv from 'dotenv';
+const pg = require('pg');
 const inquirer = require('inquirer');
-import pg from 'pg';
+//import pg from 'pg';
 
+//dotenv.config();
 const { Pool } = pg;
 
 const pool = new Pool({
@@ -23,32 +25,31 @@ const connectToDb = async () => {
   }
 };
 
-export { pool, connectToDb };
-
-
-
   
 // write function for viewDepartments()
 async function viewDepartments(){
-  const res = await pool.query('SELECT * FROM department')
-  console.log('Departments');
-  console.table(res);
+  const res = await pool.query(
+    `SELECT id, name 
+    FROM department
+    ORDER BY name`)
+  console.log('---Departments---');
+  console.table(res.rows);
 }
 // write function for viewRoles()
 async function viewRoles(){
   const res = await pool.query('SELECT * FROM role')
-  console.log('Roles')
-  console.table(res);
+  console.log('---Roles---')
+  console.table(res.rows);
 }
 // write function for viewEmployees()
 async function viewEmployees(){
   const res = await pool.query('SELECT * FROM employee')
-  console.log('Employees')
-  console.table(res);
+  console.log('---Employees---')
+  console.table(res.rows);
 }
 // write function for addDepartment()
 async function addDepartment(){
-  inquirer.prompt([
+  const response = await inquirer.prompt([
     {
       name: 'id',
       type: 'input',
@@ -61,18 +62,77 @@ async function addDepartment(){
     }
   ])
 
-  const res = await pool.query('INSERT INTO department (id, nameg),')
-  console.log('user:', res.rows[0]);
-  console.table(res);
+  const res = await pool.query(`INSERT INTO department (id, name) VALUES ($1, $2) RETURNING *`, [response.id, response.name])
+  console.log('Department');
+  console.table(res.rows[0]);
 }
 // write function for addRole()
+async function addRole(){
+  const response = await inquirer.prompt([
+    {
+      name: 'id',
+      type: 'input',
+      message: 'Role ID#: '
+    },
+    {
+      name: 'title',
+      type: 'input',
+      message: 'Title: '
+    },
+    {
+      name: 'salary',
+      type: 'input',
+      message: 'Salary: '
+    },
+    {
+      name: 'department_id',
+      type: 'input',
+      message: 'Department ID#: '
+    }
+  ])
 
+  const res = await pool.query(`INSERT INTO role (id, title, salary, department_id) VALUES ($1, $2, $3, $4) RETURNING *`, [response.id, response.title, response.salary, response.department_id])
+  console.log('Role');
+  console.table(res.rows[0]);
+}
 // write function for addEmployee()
+async function addEmployee(){
+  const response = await inquirer.prompt([
+    {
+      name: 'id',
+      type: 'input',
+      message: 'Employee ID#: '
+    },
+    {
+      name: 'first_name',
+      type: 'input',
+      message: 'First Name: '
+    },
+    {
+      name: 'last_name',
+      type: 'input',
+      message: 'Last Name: '
+    },
+    {
+      name: 'role_id',
+      type: 'input',
+      message: 'Role ID#: '
+    },
+    {
+      name: 'manager_id',
+      type: 'input',
+      message: 'Manager ID#: '
+    }
+  ])
 
+  const res = await pool.query(`INSERT INTO EMPLOYEE (id, first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4, $5) RETURNING *`, [response.id, response.first_name, response.last_name, response.role_id, response.manager_id])
+  console.log('---Employee---');
+  console.table(res.rows[0]);
+}
 // write function for updateEmployeeRole()
 
 //startCli is the start point
-function initPrompt(): void {
+function initPrompt() {
   inquirer
     .prompt([
       {
@@ -86,7 +146,8 @@ function initPrompt(): void {
           'Add a department',
           'Add a role',
           'Add an employee',
-          'Update an employee role']
+          // 'Update an employee role'
+          ]
       }
     ])
     .then((answers) => {
@@ -114,11 +175,12 @@ function initPrompt(): void {
 
         if (selection === 'Add an employee'){
           addEmployee();
-        } else
+        } 
+        //else
 
-        if (selection === 'Update an employee role'){
-          updateEmployeeRole();
-        }
+        // if (selection === 'Update an employee role'){
+        //   updateEmployeeRole();
+        // }
       })
 
       .catch((error) => {
@@ -129,3 +191,5 @@ function initPrompt(): void {
         }
     });
   }
+
+  initPrompt()

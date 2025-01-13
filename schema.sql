@@ -1,6 +1,6 @@
--- DROP database if EXISTS  employees;
+DROP database if EXISTS  employees;
 
--- create database employees;
+create database employees;
 
 drop table if exists department;
 

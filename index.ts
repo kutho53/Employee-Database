@@ -1,15 +1,70 @@
 require('dotenv').config();
 const db = require('pg');
 const inquirer = require('inquirer');
+import pg from 'pg';
+
+const { Pool } = pg;
+
+const pool = new Pool({
+  user: process.env.DB_USER,
+  password: process.env.DB_PW,
+  host: process.env.DB_HOST,
+  database: process.env.DB_DATABASE,
+  port: process.env.DB_PORT,
+});
+
+const connectToDb = async () => {
+  try {
+    await pool.connect();
+    console.log('Connected to the database.');
+  } catch (err) {
+    console.error('Error connecting to database:', err);
+    process.exit(1);
+  }
+};
+
+export { pool, connectToDb };
+
+
+
   
 // write function for viewDepartments()
-
+async function viewDepartments(){
+  const res = await pool.query('SELECT * FROM department')
+  console.log('Departments');
+  console.table(res);
+}
 // write function for viewRoles()
-
+async function viewRoles(){
+  const res = await pool.query('SELECT * FROM role')
+  console.log('Roles')
+  console.table(res);
+}
 // write function for viewEmployees()
-
+async function viewEmployees(){
+  const res = await pool.query('SELECT * FROM employee')
+  console.log('Employees')
+  console.table(res);
+}
 // write function for addDepartment()
+async function addDepartment(){
+  inquirer.prompt([
+    {
+      name: 'id',
+      type: 'input',
+      message: 'Department ID#: '
+    },
+    {
+      name: 'name',
+      type: 'input',
+      message: 'Department Name: '
+    }
+  ])
 
+  const res = await pool.query('INSERT INTO department (id, nameg),')
+  console.log('user:', res.rows[0]);
+  console.table(res);
+}
 // write function for addRole()
 
 // write function for addEmployee()
@@ -17,7 +72,7 @@ const inquirer = require('inquirer');
 // write function for updateEmployeeRole()
 
 //startCli is the start point
-function startCli(): void {
+function initPrompt(): void {
   inquirer
     .prompt([
       {
@@ -38,31 +93,31 @@ function startCli(): void {
       let selection = answers.startMenu
 
         if (selection === 'View all departments'){
-          this.viewDepartments();
+          viewDepartments();
         } else
 
         if (selection === 'View all roles'){
-          this.viewRoles();
+          viewRoles();
         } else
 
         if (selection === 'View all employees'){
-          this.viewEmployees();
+          viewEmployees();
         } else
 
         if (selection === 'Add a department'){
-          this.addDepartment();
+          addDepartment();
         } else
 
         if (selection === 'Add a role'){
-          this.addRole();
+          addRole();
         } else
 
         if (selection === 'Add an employee'){
-          this.addEmployee();
+          addEmployee();
         } else
 
         if (selection === 'Update an employee role'){
-          this.updateEmployeeRole();
+          updateEmployeeRole();
         }
       })
 

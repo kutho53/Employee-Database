@@ -130,8 +130,25 @@ async function addEmployee(){
   console.table(res.rows[0]);
 }
 // write function for updateEmployeeRole()
+async function updateEmployeeRole(){
+  const response = await inquirer.prompt([
+    {
+      name: 'employee_id',
+      type: 'input',
+      message: 'ID # of employee to be updated:'
+    },
+    {
+      name: 'role_id',
+      type: 'input',
+      message: 'New role ID#:'
+    }
+  ])
 
-//startCli is the start point
+  const res = await pool.query(`UPDATE employee SET role_id  = $2 where id = $1 RETURNING *`, [response.employee_id, response.role_id])
+  console.log('---Updated Roles---');
+  console.table(res.rows);
+}
+//initPrompt is the start point
 function initPrompt() {
   inquirer
     .prompt([
@@ -146,7 +163,7 @@ function initPrompt() {
           'Add a department',
           'Add a role',
           'Add an employee',
-          // 'Update an employee role'
+          'Update an employee role'
           ]
       }
     ])
@@ -175,12 +192,11 @@ function initPrompt() {
 
         if (selection === 'Add an employee'){
           addEmployee();
-        } 
-        //else
+        } else
 
-        // if (selection === 'Update an employee role'){
-        //   updateEmployeeRole();
-        // }
+        if (selection === 'Update an employee role'){
+          updateEmployeeRole();
+        }
       })
 
       .catch((error) => {
